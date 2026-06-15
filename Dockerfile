@@ -29,6 +29,8 @@ RUN pnpm install --frozen-lockfile
 
 # Copy frontend source and build
 COPY frontend/ ./
+# Public legal pages import markdown from the repository docs directory.
+COPY docs/legal/ ../docs/legal/
 RUN pnpm run build
 
 # -----------------------------------------------------------------------------
