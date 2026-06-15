@@ -13,7 +13,11 @@
         <img v-if="settingsLoaded" :src="siteLogo || '/logo.png'" alt="Logo" class="h-full w-full object-contain" />
       </div>
       <div class="sidebar-brand" :class="{ 'sidebar-brand-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">
-        <span class="sidebar-brand-title text-lg font-bold text-gray-900 dark:text-white">
+        <span v-if="useLinmhWordmark" class="sidebar-brand-title block">
+          <img src="/linmhai-wordmark-dark.png" alt="LinmhAI" class="h-6 w-auto max-w-[8.75rem] object-contain dark:hidden" />
+          <img src="/linmhai-wordmark-light.png" alt="LinmhAI" class="hidden h-6 w-auto max-w-[8.75rem] object-contain dark:block" />
+        </span>
+        <span v-else class="sidebar-brand-title text-lg font-bold text-gray-900 dark:text-white">
           {{ siteName }}
         </span>
         <!-- Version Badge -->
@@ -242,8 +246,9 @@ const isDark = ref(document.documentElement.classList.contains('dark'))
 const expandedGroups = ref<Set<string>>(new Set())
 
 // Site settings from appStore (cached, no flicker)
-const siteName = computed(() => appStore.siteName)
+const siteName = computed(() => appStore.siteName || 'LinmhAI')
 const siteLogo = computed(() => appStore.siteLogo)
+const useLinmhWordmark = computed(() => !siteLogo.value && siteName.value.trim().toLowerCase() === 'linmhai')
 const siteVersion = computed(() => appStore.siteVersion)
 const settingsLoaded = computed(() => appStore.publicSettingsLoaded)
 
