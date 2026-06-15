@@ -35,9 +35,13 @@
           >
             <img :src="siteLogo || '/logo.png'" alt="Logo" class="h-full w-full object-contain" />
           </div>
-          <h1 class="text-gradient mb-2 text-3xl font-bold">
-            {{ siteName }}
-          </h1>
+          <div v-if="useLinmhWordmark" class="mb-2 flex justify-center">
+              <img src="/linmhai-wordmark-dark.png" alt="LinmhAI" class="h-12 w-auto max-w-[18rem] object-contain dark:hidden" />
+              <img src="/linmhai-wordmark-light.png" alt="LinmhAI" class="hidden h-12 w-auto max-w-[18rem] object-contain dark:block" />
+            </div>
+            <h1 v-else class="text-gradient mb-2 text-3xl font-bold">
+              {{ siteName }}
+            </h1>
           <p class="text-sm text-gray-500 dark:text-dark-400">
             {{ siteSubtitle }}
           </p>
@@ -69,9 +73,10 @@ import { sanitizeUrl } from '@/utils/url'
 
 const appStore = useAppStore()
 
-const siteName = computed(() => appStore.siteName || 'Sub2API')
+const siteName = computed(() => appStore.siteName || 'LinmhAI')
 const siteLogo = computed(() => sanitizeUrl(appStore.siteLogo || '', { allowRelative: true, allowDataUrl: true }))
-const siteSubtitle = computed(() => appStore.cachedPublicSettings?.site_subtitle || 'Subscription to API Conversion Platform')
+const useLinmhWordmark = computed(() => !siteLogo.value && siteName.value.trim().toLowerCase() === 'linmhai')
+const siteSubtitle = computed(() => appStore.cachedPublicSettings?.site_subtitle || 'AI Workspace')
 const settingsLoaded = computed(() => appStore.publicSettingsLoaded)
 
 const currentYear = computed(() => new Date().getFullYear())
