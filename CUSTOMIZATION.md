@@ -10,8 +10,8 @@ This fork keeps two important branches:
 Every push to `custom-lmh` builds and publishes:
 
 ```text
-ghcr.io/Lur1N77777/sub2api:custom
-ghcr.io/Lur1N77777/sub2api:custom-<commit-sha>
+ghcr.io/lur1n77777/sub2api:custom
+ghcr.io/lur1n77777/sub2api:custom-<commit-sha>
 ```
 
 Use `:custom` in the server `docker-compose.yml` when you are ready to deploy custom builds.
@@ -28,4 +28,4 @@ This is intentionally PR-based instead of silent auto-merge, so official changes
 2. Keep changes small and config-gated when possible.
 3. Let the sync workflow open PRs for upstream updates.
 4. Merge the sync PR after review.
-5. Deploy the new `ghcr.io/Lur1N77777/sub2api:custom` image.
+5. Deploy the new `ghcr.io/lur1n77777/sub2api:custom` image.
