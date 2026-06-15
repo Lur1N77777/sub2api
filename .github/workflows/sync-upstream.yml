@@ -1,0 +1,82 @@
+name: Sync upstream into custom branch
+
+on:
+  schedule:
+    - cron: "17 20 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: sync-upstream-custom-lmh
+  cancel-in-progress: false
+
+env:
+  UPSTREAM_REPO: Wei-Shaw/sub2api
+  UPSTREAM_BRANCH: main
+  CUSTOM_BRANCH: custom-lmh
+  SYNC_BRANCH: sync/upstream-main
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout custom branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.CUSTOM_BRANCH }}
+          fetch-depth: 0
+
+      - name: Merge upstream into sync branch
+        id: merge
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git remote add upstream "https://github.com/${UPSTREAM_REPO}.git"
+          git fetch upstream "$UPSTREAM_BRANCH"
+          git checkout -B "$SYNC_BRANCH" "$CUSTOM_BRANCH"
+          if ! git merge --no-edit "upstream/$UPSTREAM_BRANCH"; then
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+            echo "merge_conflict=true" >> "$GITHUB_OUTPUT"
+            echo "::error::Upstream merge has conflicts. Resolve locally on $CUSTOM_BRANCH, then rerun this workflow."
+            exit 1
+          fi
+          if git diff --quiet "origin/$CUSTOM_BRANCH"..HEAD; then
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+            echo "merge_conflict=false" >> "$GITHUB_OUTPUT"
+            echo "No upstream changes to sync."
+            exit 0
+          fi
+          git push origin "$SYNC_BRANCH" --force
+          echo "has_changes=true" >> "$GITHUB_OUTPUT"
+          echo "merge_conflict=false" >> "$GITHUB_OUTPUT"
+
+      - name: Create or update pull request
+        if: steps.merge.outputs.has_changes == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          title="chore: sync upstream Sub2API"
+          body=$(cat <<'BODY'
+This PR was created automatically by the upstream sync workflow.
+
+It merges the latest official `Wei-Shaw/sub2api` changes into `custom-lmh` so custom modifications can stay current without losing local patches.
+
+Recommended process:
+1. Review the diff and CI result.
+2. Resolve conflicts if the workflow failed.
+3. Merge this PR into `custom-lmh` when ready.
+4. The Docker workflow will publish a fresh `ghcr.io/lur1n77777/sub2api:custom` image after merge.
+BODY
+)
+          if gh pr view "$SYNC_BRANCH" --base "$CUSTOM_BRANCH" >/dev/null 2>&1; then
+            gh pr edit "$SYNC_BRANCH" --base "$CUSTOM_BRANCH" --title "$title" --body "$body"
+          else
+            gh pr create --base "$CUSTOM_BRANCH" --head "$SYNC_BRANCH" --title "$title" --body "$body"
+          fi
