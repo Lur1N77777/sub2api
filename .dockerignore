@@ -10,7 +10,11 @@
 # Documentation
 *.md
 !deploy/DOCKER.md
-docs/
+# Frontend production builds import public legal markdown.
+!docs/
+docs/**
+!docs/legal/
+!docs/legal/**
 
 # IDE
 .idea/
