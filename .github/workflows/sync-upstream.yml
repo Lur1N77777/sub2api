@@ -63,18 +63,7 @@ jobs:
         run: |
           set -euo pipefail
           title="chore: sync upstream Sub2API"
-          body=$(cat <<'BODY'
-This PR was created automatically by the upstream sync workflow.
-
-It merges the latest official `Wei-Shaw/sub2api` changes into `custom-lmh` so custom modifications can stay current without losing local patches.
-
-Recommended process:
-1. Review the diff and CI result.
-2. Resolve conflicts if the workflow failed.
-3. Merge this PR into `custom-lmh` when ready.
-4. The Docker workflow will publish a fresh `ghcr.io/lur1n77777/sub2api:custom` image after merge.
-BODY
-)
+          body=$'This PR was created automatically by the upstream sync workflow.\n\nIt merges the latest official `Wei-Shaw/sub2api` changes into `custom-lmh` so custom modifications can stay current without losing local patches.\n\nRecommended process:\n1. Review the diff and CI result.\n2. Resolve conflicts if the workflow failed.\n3. Merge this PR into `custom-lmh` when ready.\n4. The Docker workflow will publish a fresh `ghcr.io/lur1n77777/sub2api:custom` image after merge.'
           if gh pr view "$SYNC_BRANCH" --base "$CUSTOM_BRANCH" >/dev/null 2>&1; then
             gh pr edit "$SYNC_BRANCH" --base "$CUSTOM_BRANCH" --title "$title" --body "$body"
           else
