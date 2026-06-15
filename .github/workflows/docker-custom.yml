@@ -15,7 +15,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/sub2api
+  IMAGE_NAME: ghcr.io/lur1n77777/sub2api
 
 jobs:
   build:
