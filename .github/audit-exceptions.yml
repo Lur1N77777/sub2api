@@ -3,35 +3,14 @@ exceptions:
   - package: xlsx
     advisory: "GHSA-4r6h-8v6p-xvw6"
     severity: high
-    reason: "Admin export only; switched to dynamic import to reduce exposure (CVE-2023-30533)"
-    mitigation: "Load only on export; restrict export permissions and data scope"
-    expires_on: "2026-07-06"
+    reason: "xlsx 0.18.5 是 npm 上最后一个发布版本，上游 SheetJS 只在自有 CDN 发布修复版；本仓仅用于管理端导出"
+    mitigation: "导出走动态 import 且限管理员角色；导出数据来自本系统查询结果，不解析用户上传的 workbook"
+    expires_on: "2027-06-30"
     owner: "security@your-domain"
   - package: xlsx
     advisory: "GHSA-5pgg-2g8v-p4x9"
     severity: high
-    reason: "Admin export only; switched to dynamic import to reduce exposure (CVE-2024-22363)"
-    mitigation: "Load only on export; restrict export permissions and data scope"
-    expires_on: "2026-07-06"
-    owner: "security@your-domain"
-  - package: lodash
-    advisory: "GHSA-r5fr-rjxr-66jc"
-    severity: high
-    reason: "lodash _.template not used with untrusted input; only internal admin UI templates"
-    mitigation: "No user-controlled template strings; plan to migrate to lodash-es tree-shaken imports"
-    expires_on: "2026-07-02"
-    owner: "security@your-domain"
-  - package: lodash-es
-    advisory: "GHSA-r5fr-rjxr-66jc"
-    severity: high
-    reason: "lodash-es _.template not used with untrusted input; only internal admin UI templates"
-    mitigation: "No user-controlled template strings; plan to migrate to native JS alternatives"
-    expires_on: "2026-07-02"
-    owner: "security@your-domain"
-  - package: axios
-    advisory: "GHSA-3p68-rc4w-qgx5"
-    severity: critical
-    reason: "NO_PROXY bypass not exploitable; all API calls go to known endpoints via server-side proxy"
-    mitigation: "Proxy configuration not user-controlled; upgrade when axios releases fix"
-    expires_on: "2026-07-10"
+    reason: "同上（ReDoS）；npm 版本线无修复版"
+    mitigation: "同上；导出为管理员主动触发的低频操作"
+    expires_on: "2027-06-30"
     owner: "security@your-domain"
